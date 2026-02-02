@@ -1,18 +1,20 @@
 export default async function handler(req, res) {
-  const { q, ciudad } = req.query;
+  const { what, where } = req.query;
 
-  // Simulación de resultados reales
-  const trabajos = [
-    { empresa: "OXXO", puesto: "Cajero/a", ciudad: "San Nicolas de los Garza", link: "https://www.occ.com.mx/empleo/cajero-oxxo-12345" },
-    { empresa: "Bachoco", puesto: "Operador de Producción", ciudad: "San Nicolas de los Garza", link: "https://www.occ.com.mx/empleo/operador-produccion-67890" },
-    { empresa: "Cemex", puesto: "Técnico en Mantenimiento", ciudad: "Monterrey", link: "https://www.occ.com.mx/empleo/tecnico-mantenimiento-11223" },
-  ];
+  const url = `https://api.adzuna.com/v1/api/jobs/mx/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&what=${what}&where=${where}`;
 
-  let resultados = trabajos.filter(t =>
-    t.puesto.toLowerCase().includes(q?.toLowerCase() || "") &&
-    t.ciudad.toLowerCase().includes(ciudad?.toLowerCase() || "")
-  );
+  const response = await fetch(url);
+  const data = await response.json();
 
-  res.status(200).json(resultados);
+  const jobs = data.results.map(job => ({
+    title: job.title,
+    company: job.company.display_name,
+    location: job.location.display_name,
+    salary: job.salary_min
+      ? `$${job.salary_min} - $${job.salary_max}`
+      : "No especificado",
+    url: job.redirect_url
+  }));
+
+  res.status(200).json(jobs);
 }
-
