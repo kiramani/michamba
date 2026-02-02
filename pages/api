@@ -1,20 +1,53 @@
-export default async function handler(req, res) {
-  const { what, where } = req.query;
+const empleos = [
+  {
+    puesto: "Técnico electromecánico",
+    empresa: "Maquila Norte",
+    ubicacion: "San Nicolás",
+    sueldo: 12000
+  },
+  {
+    puesto: "Auxiliar de mantenimiento",
+    empresa: "Industria MX",
+    ubicacion: "Apodaca",
+    sueldo: 10000
+  },
+  {
+    puesto: "Operador de producción",
+    empresa: "Plásticos SA",
+    ubicacion: "Escobedo",
+    sueldo: 9000
+  }
+];
 
-  const url = `https://api.adzuna.com/v1/api/jobs/mx/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&what=${what}&where=${where}`;
+document.getElementById("btnBuscar").addEventListener("click", buscar);
 
-  const response = await fetch(url);
-  const data = await response.json();
+function buscar() {
+  const texto = document.getElementById("busqueda").value.toLowerCase();
+  const resultados = empleos.filter(e =>
+    e.puesto.toLowerCase().includes(texto) ||
+    e.ubicacion.toLowerCase().includes(texto)
+  );
 
-  const jobs = data.results.map(job => ({
-    title: job.title,
-    company: job.company.display_name,
-    location: job.location.display_name,
-    salary: job.salary_min
-      ? `$${job.salary_min} - $${job.salary_max}`
-      : "No especificado",
-    url: job.redirect_url
-  }));
+  mostrar(resultados);
+}
 
-  res.status(200).json(jobs);
+function mostrar(lista) {
+  const div = document.getElementById("resultados");
+  div.innerHTML = "";
+
+  if (lista.length === 0) {
+    div.innerHTML = "<p>No se encontraron empleos</p>";
+    return;
+  }
+
+  lista.forEach(e => {
+    div.innerHTML += `
+      <div class="card">
+        <h3>${e.puesto}</h3>
+        <p><strong>Empresa:</strong> ${e.empresa}</p>
+        <p><strong>Ubicación:</strong> ${e.ubicacion}</p>
+        <p><strong>Sueldo:</strong> $${e.sueldo}</p>
+      </div>
+    `;
+  });
 }
