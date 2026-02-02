@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>MiChamba IA</title>
+  <meta charset="UTF-8" />
+  <title>Mi Chamba</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Encuentra trabajo fácil 🚀</h1>
 
-  <div class="filters">
-    <input id="what" placeholder="Cargo o categoría (ej: técnico)">
-    <input id="where" placeholder="Ciudad (ej: Monterrey)">
-    <select id="remote">
-      <option value="">Todos</option>
-      <option value="remote">Remoto</option>
-      <option value="onsite">Presencial</option>
-    </select>
-    <button onclick="searchJobs()">Buscar empleo</button>
-  </div>
+  <h1>🔎 Busca tu empleo</h1>
 
-  <div id="jobs"></div>
+  <input
+    type="text"
+    id="busqueda"
+    placeholder="Ej: técnico, mantenimiento, San Nicolás"
+  />
 
-  <script src="app.js"></script>
+  <button id="btnBuscar">Buscar empleo</button>
+
+  <div id="resultados"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
