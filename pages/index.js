@@ -6,13 +6,13 @@ export default function Home() {
   return (
     <div className="container">
       <Head>
-        <title>Next.js Starter!</title>
+        <title>MiChamba.js Encuentra empleo en México!</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <Header title="Welcome to my app!" />
-        <p className="description">
+        <Header title="MiChamba" />
+        <p className=" Encuentra empleo en México según lo que estudiaste y lo que quieres ganar">
           Get started by editing <code>pages/index.js</code>
         </p>
       </main>
