@@ -1,6 +1,4 @@
 import Head from 'next/head'
-import Header from '@components/Header'
-import Footer from '@components/Footer'
 import { useState } from 'react'
 
 const JOBS = [
@@ -9,60 +7,57 @@ const JOBS = [
     company: 'Plásticos del Norte',
     city: 'Monterrey',
     salary: 12000,
-    link: 'https://example.com/vacante1',
-  },
-  {
-    title: 'Técnico Electromecánico',
-    company: 'Maquila Industrial SA',
-    city: 'San Nicolás',
-    salary: 15000,
-    link: 'https://example.com/vacante2',
+    link: 'https://mx.indeed.com/viewjob?jk=1',
   },
   {
     title: 'Operador de Inyección',
-    company: 'Moldeos MX',
+    company: 'Moldeos Industriales',
     city: 'Apodaca',
     salary: 10000,
-    link: 'https://example.com/vacante3',
+    link: 'https://mx.occ.com.mx/empleo/2',
+  },
+  {
+    title: 'Técnico Electromecánico',
+    company: 'Maquila SA',
+    city: 'San Nicolás',
+    salary: 15000,
+    link: 'https://www.computrabajo.com.mx/ofertas/3',
   },
 ]
 
 export default function Home() {
   const [results, setResults] = useState([])
 
-  const handleSearch = (e) => {
+  const buscar = (e) => {
     e.preventDefault()
 
     const career = e.target.career.value.toLowerCase()
     const salary = parseInt(e.target.salary.value)
     const city = e.target.city.value.toLowerCase()
 
-    const filtered = JOBS.filter((job) => {
-      return (
-        job.title.toLowerCase().includes(career) &&
-        job.city.toLowerCase().includes(city) &&
-        job.salary >= salary
-      )
-    })
+    const filtrados = JOBS.filter((job) =>
+      job.title.toLowerCase().includes(career) &&
+      job.city.toLowerCase().includes(city) &&
+      job.salary >= salary
+    )
 
-    setResults(filtered)
+    setResults(filtrados)
   }
 
   return (
-    <div className="container">
+    <>
       <Head>
-        <title>MiChamba | Encuentra empleo en México</title>
+        <title>MiChamba | Empleos en México</title>
       </Head>
 
       <main>
-        <Header title="MiChamba" />
-
-        <p className="description">
-          Encuentra trabajos según lo que estudiaste, el sueldo que buscas y tu
-          ciudad.
+        <h1>MiChamba</h1>
+        <p>
+          Encuentra empleo en México según lo que estudiaste, el sueldo que
+          buscas y tu ciudad.
         </p>
 
-        <form onSubmit={handleSearch} className="form">
+        <form onSubmit={buscar}>
           <input name="career" placeholder="¿Qué estudiaste?" required />
           <input
             name="salary"
@@ -74,25 +69,17 @@ export default function Home() {
           <button type="submit">Buscar empleo</button>
         </form>
 
-        <section className="jobs">
+        <section>
           {results.length === 0 && (
-            <p className="no-results">
-              Aquí aparecerán las vacantes 👇
-            </p>
+            <p>Aquí aparecerán las vacantes 👇</p>
           )}
 
           {results.map((job, i) => (
-            <div className="job-card" key={i}>
+            <div key={i} className="card">
               <h3>{job.title}</h3>
-              <p>
-                <strong>Empresa:</strong> {job.company}
-              </p>
-              <p>
-                <strong>Ciudad:</strong> {job.city}
-              </p>
-              <p>
-                <strong>Sueldo:</strong> ${job.salary} MXN
-              </p>
+              <p>{job.company}</p>
+              <p>{job.city}</p>
+              <p>${job.salary} MXN</p>
               <a href={job.link} target="_blank">
                 Ver vacante
               </a>
@@ -101,20 +88,27 @@ export default function Home() {
         </section>
       </main>
 
-      <Footer />
-
       <style jsx>{`
-        .description {
-          text-align: center;
-          margin-bottom: 20px;
+        main {
+          max-width: 600px;
+          margin: auto;
+          padding: 40px 20px;
+          font-family: Arial;
         }
 
-        .form {
-          max-width: 400px;
-          margin: auto;
+        h1 {
+          text-align: center;
+        }
+
+        p {
+          text-align: center;
+        }
+
+        form {
           display: flex;
           flex-direction: column;
           gap: 10px;
+          margin: 20px 0;
         }
 
         input {
@@ -130,47 +124,24 @@ export default function Home() {
           cursor: pointer;
         }
 
-        .jobs {
-          margin-top: 30px;
-          display: grid;
-          gap: 15px;
-          max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .job-card {
+        .card {
           border: 1px solid #ddd;
           padding: 15px;
           border-radius: 8px;
-          background: #fafafa;
+          margin-top: 15px;
         }
 
-        .job-card h3 {
-          margin: 0 0 5px 0;
-        }
-
-        .job-card a {
+        .card a {
           display: inline-block;
           margin-top: 10px;
-          color: white;
           background: #0070f3;
+          color: white;
           padding: 8px 12px;
-          border-radius: 5px;
           text-decoration: none;
-        }
-
-        .no-results {
-          text-align: center;
-          color: #666;
+          border-radius: 5px;
         }
       `}</style>
-    </div>
+    </>
   )
 }
 
-
-      <Footer />
-    </div>
-  )
-}
