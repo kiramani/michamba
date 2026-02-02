@@ -1,147 +1,119 @@
 import Head from 'next/head'
 import { useState } from 'react'
-
-const JOBS = [
-  {
-    title: 'Técnico en Plásticos',
-    company: 'Plásticos del Norte',
-    city: 'Monterrey',
-    salary: 12000,
-    link: 'https://mx.indeed.com/viewjob?jk=1',
-  },
-  {
-    title: 'Operador de Inyección',
-    company: 'Moldeos Industriales',
-    city: 'Apodaca',
-    salary: 10000,
-    link: 'https://mx.occ.com.mx/empleo/2',
-  },
-  {
-    title: 'Técnico Electromecánico',
-    company: 'Maquila SA',
-    city: 'San Nicolás',
-    salary: 15000,
-    link: 'https://www.computrabajo.com.mx/ofertas/3',
-  },
-]
+import VacanteCard from '../components/VacanteCard'
+import vacantesData from '../data/vacantes.json'
+import '../styles/global.css'
 
 export default function Home() {
-  const [results, setResults] = useState([])
+  const [query, setQuery] = useState('') // Carrera / puesto
+  const [minSalary, setMinSalary] = useState('') // Sueldo mínimo (string para control)
+  const [city, setCity] = useState('') // Ciudad
+  const [results, setResults] = useState(vacantesData) // resultados mostrados
 
-  const buscar = (e) => {
+  const handleSearch = (e) => {
     e.preventDefault()
+    // Normalizar inputs
+    const q = query.trim().toLowerCase()
+    const c = city.trim().toLowerCase()
+    const min = parseInt(minSalary, 10) || 0
 
-    const career = e.target.career.value.toLowerCase()
-    const salary = parseInt(e.target.salary.value)
-    const city = e.target.city.value.toLowerCase()
+    const filtered = vacantesData.filter((v) => {
+      // Asegurarnos de que sueldo sea numérico
+      const sueldo = typeof v.sueldo === 'number' ? v.sueldo : parseInt(v.sueldo, 10) || 0
 
-    const filtrados = JOBS.filter((job) =>
-      job.title.toLowerCase().includes(career) &&
-      job.city.toLowerCase().includes(city) &&
-      job.salary >= salary
-    )
+      // Match por título/puesto (busca en título y en empresa opcionalmente)
+      const matchesQuery =
+        !q ||
+        (v.titulo && v.titulo.toLowerCase().includes(q)) ||
+        (v.puesto && v.puesto.toLowerCase().includes(q)) ||
+        (v.categoria && v.categoria.toLowerCase().includes(q))
 
-    setResults(filtrados)
+      // Match por ciudad
+      const matchesCity = !c || (v.ciudad && v.ciudad.toLowerCase().includes(c))
+
+      // Match por sueldo mínimo
+      const matchesSalary = !min || sueldo >= min
+
+      return matchesQuery && matchesCity && matchesSalary
+    })
+
+    setResults(filtered)
+  }
+
+  const handleReset = () => {
+    setQuery('')
+    setMinSalary('')
+    setCity('')
+    setResults(vacantesData)
   }
 
   return (
     <>
       <Head>
-        <title>MiChamba | Empleos en México</title>
+        <title>MiChamba | Encuentra empleo en México</title>
+        <meta name="description" content="Busca empleos locales en México — MiChamba" />
       </Head>
 
-      <main>
-        <h1>MiChamba</h1>
-        <p>
-          Encuentra empleo en México según lo que estudiaste, el sueldo que
-          buscas y tu ciudad.
-        </p>
+      <main className="container">
+        <h1 className="title">MiChamba</h1>
+        <p className="subtitle">Encuentra empleo en México</p>
 
-        <form onSubmit={buscar}>
-          <input name="career" placeholder="¿Qué estudiaste?" required />
-          <input
-            name="salary"
-            type="number"
-            placeholder="Sueldo mínimo (MXN)"
-            required
-          />
-          <input name="city" placeholder="Ciudad" required />
-          <button type="submit">Buscar empleo</button>
+        <form className="searchForm" onSubmit={handleSearch}>
+          <div className="row">
+            <label>
+              Carrera / Puesto
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Ej. Desarrollador frontend, Contador..."
+                aria-label="Carrera o puesto"
+              />
+            </label>
+
+            <label>
+              Sueldo mínimo (MXN)
+              <input
+                type="number"
+                value={minSalary}
+                onChange={(e) => setMinSalary(e.target.value)}
+                placeholder="Ej. 15000"
+                aria-label="Sueldo mínimo"
+                min="0"
+              />
+            </label>
+
+            <label>
+              Ciudad
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Ej. Ciudad de México, Guadalajara..."
+                aria-label="Ciudad"
+              />
+            </label>
+          </div>
+
+          <div className="actions">
+            <button type="submit" className="btn primary">Buscar empleo</button>
+            <button type="button" className="btn" onClick={handleReset}>Mostrar todos</button>
+          </div>
         </form>
 
-        <section>
-          {results.length === 0 && (
-            <p>Aquí aparecerán las vacantes 👇</p>
-          )}
-
-          {results.map((job, i) => (
-            <div key={i} className="card">
-              <h3>{job.title}</h3>
-              <p>{job.company}</p>
-              <p>{job.city}</p>
-              <p>${job.salary} MXN</p>
-              <a href={job.link} target="_blank">
-                Ver vacante
-              </a>
+        <section className="results">
+          <h2>Vacantes ({results.length})</h2>
+          {results.length === 0 ? (
+            <p>No se encontraron vacantes que coincidan con tu búsqueda.</p>
+          ) : (
+            <div className="grid">
+              {results.map((v) => (
+                <VacanteCard key={v.id} vacante={v} />
+              ))}
             </div>
-          ))}
+          )}
         </section>
       </main>
-
-      <style jsx>{`
-        main {
-          max-width: 600px;
-          margin: auto;
-          padding: 40px 20px;
-          font-family: Arial;
-        }
-
-        h1 {
-          text-align: center;
-        }
-
-        p {
-          text-align: center;
-        }
-
-        form {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin: 20px 0;
-        }
-
-        input {
-          padding: 10px;
-          font-size: 16px;
-        }
-
-        button {
-          padding: 10px;
-          background: black;
-          color: white;
-          border: none;
-          cursor: pointer;
-        }
-
-        .card {
-          border: 1px solid #ddd;
-          padding: 15px;
-          border-radius: 8px;
-          margin-top: 15px;
-        }
-
-        .card a {
-          display: inline-block;
-          margin-top: 10px;
-          background: #0070f3;
-          color: white;
-          padding: 8px 12px;
-          text-decoration: none;
-          border-radius: 5px;
-        }
-      `}</style>
     </>
   )
 }
-
