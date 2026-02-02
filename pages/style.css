@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+input, select, button {
+  padding: 10px;
+}
+
+.job {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.job h3 {
+  margin: 0;
+}
+
+.apply {
+  margin-top: 10px;
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+}
